@@ -13,7 +13,7 @@ DEFAULT_BAUD_RATE = 9600 # Serial baud rate to use if no other specified
 DEFAULT_SERIAL_TIMEOUT = 2 # Serial timeout to use if not specified
 DEFAULT_READ_TIMEOUT = 1 #How long to sit looking for the correct character sequence.
 
-DEFAULT_LOGGING_LEVEL = logging.DEBUG
+DEFAULT_LOGGING_LEVEL = logging.WARN
 
 MSG_CHAR_1 = b'\x42' # First character to be recieved in a valid packet
 MSG_CHAR_2 = b'\x4d' # Second character to be recieved in a valid packet
