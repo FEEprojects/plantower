@@ -133,3 +133,4 @@ class Plantower(object):
                     self._verify(recv) # verify the checksum
                     return PlantowerReading(recv) # convert to reading object
             #If the character isn't what we are expecting loop until timeout
+        raise PlantowerException("No message recieved")
