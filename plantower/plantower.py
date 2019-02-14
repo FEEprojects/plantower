@@ -119,7 +119,7 @@ class Plantower(object):
         recv = b''
         start = datetime.utcnow() #Start timer
         if perform_flush:
-            self.serial.flush() #Flush any data in the buffer
+            self.serial.reset_input_buffer()  #Flush any data in the buffer
         while(
                 datetime.utcnow() <
                 (start + timedelta(seconds=self.read_timeout))):
