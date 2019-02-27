@@ -43,8 +43,8 @@ class PlantowerReading(object):
 
     def __str__(self):
         return (
-            "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," %
-            (self.pm10_cf1, self.pm10_std, self.pm25_cf1, self.pm25_std,
+            "%s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," %
+            (self.timestamp, self.pm10_cf1, self.pm10_std, self.pm25_cf1, self.pm25_std,
              self.pm100_cf1, self.pm100_std, self.gr03um, self.gr05um,
              self.gr10um, self.gr25um, self.gr50um, self.gr100um))
 
