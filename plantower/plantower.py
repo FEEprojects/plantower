@@ -27,7 +27,7 @@ class PlantowerReading(object):
             Takes a line from the Plantower serial port and converts it into
             an object containing the data
         """
-        self.timestamp = datetime.utcnow()
+        self.timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         self.pm10_cf1 = round(line[4] * 256 + line[5], 1)
         self.pm25_cf1 = round(line[6] * 256 + line[7], 1)
         self.pm100_cf1 = round(line[8] * 256 + line[9], 1)
