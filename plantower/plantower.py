@@ -4,7 +4,8 @@
     12/02/2018
 """
 
-import logging, time
+import logging
+import time
 from datetime import datetime, timedelta
 from serial import Serial, SerialException
 
@@ -109,9 +110,10 @@ class Plantower(object):
         """
         calc = 0
         ord_arr = []
-        for c in bytearray(recv[:-2]): #Add all the bytes together except the checksum bytes
-            calc += c
-            ord_arr.append(c)
+         #Add all the bytes together except the checksum bytes
+        for char in bytearray(recv[:-2]):
+            calc += char
+            ord_arr.append(char)
         self.logger.debug(str(ord_arr))
         sent = (recv[-2] << 8) | recv[-1] # Combine the 2 bytes together
         if sent != calc:
@@ -146,8 +148,8 @@ class Plantower(object):
 
     def mode_change(self, mode=PMS_PASSIVE_MODE):
         """
-            The default mode for the sensor is ACTIVE and whenever power OFF and ON (or sleep and wakeup)
-             the sensor starts in ACTIVE mode.
+            The default mode for the sensor is ACTIVE and whenever power OFF and ON 
+            (or sleep and wakeup) the sensor starts in ACTIVE mode.
             After mode changed, you need to wait some seconds for the sensor to get data again,
             immediate reading sensor data gives you 0 values.
         """
@@ -165,8 +167,10 @@ class Plantower(object):
 
     def read_in_passive(self, perform_flush=True):
         """
-            In passive mode, the sensor fan is running but measured data is not automatically serviced.
-            The sensor returns data in response to command, and data structure is same as the active mode.
+            In passive mode, the sensor fan is running but measured data 
+            is not automatically serviced.
+            The sensor returns data in response to command, and data structure
+             is same as the active mode.
         """
 
         if perform_flush:
@@ -191,40 +195,11 @@ class Plantower(object):
             self.serial.write(PMS_CMD_TO_WAKEUP)
 
         self.serial.flush()  # Make sure tx buffer is completely sent
-        time.sleep(2)  # Number not specified in datasheet but sensor does not receive command for 2s.
+        # Number not specified in datasheet but sensor does not receive command for 2s.
+        time.sleep(2)  
 
     def set_to_wakeup(self):
+        """
+            Starts the sensors fan
+        """
         self.set_to_sleep(False)
-
-
-"""
-#  test code for sleep wakeup with passive mode
-pt = plantower.Plantower(port='COM3')
-
-pt.set_to_sleep()
-time.sleep(5)
-
-pt.set_to_wakeup()
-pt.mode_change(0)
-time.sleep(10)
-
-result = pt.read_in_passive()
-pt.set_to_sleep()
-print(result)
-exit(0)
-
-
-#  test code for passive mode
-pt = plantower.Plantower(port='COM3')
-pt.mode_change(0)
-time.sleep(5)
-result = pt.read_in_passive()
-print(result)
-exit(0)
-
-
-#  test code for active mode
-pt = plantower.Plantower(port='COM3')
-print(pt.read())
-
-"""
