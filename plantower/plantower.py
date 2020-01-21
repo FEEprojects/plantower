@@ -21,6 +21,11 @@ MSG_CHAR_2 = b'\x4d' # Second character to be recieved in a valid packet
 PMS_PASSIVE_MODE = 0
 PMS_ACTIVE_MODE = 1
 
+PMS_CMD_CHANGE_MODE_PASSIVE = b'\x42\x4d\xe1\x00\x00\x01\x70'
+PMS_CMD_CHANGE_MODE_ACTIVE = b'\x42\x4d\xe1\x00\x01\x01\x71'
+PMS_CMD_TO_SLEEP = b'\x42\x4d\xe4\x00\x00\x01\x73'
+PMS_CMD_TO_WAKEUP = b'\x42\x4d\xe4\x00\x01\x01\x74'
+PMS_CMD_READ_IN_PASSIVE = b'\x42\x4d\xe2\x00\x00\x01\x71'
 
 class PlantowerReading(object):
     """
@@ -147,26 +152,30 @@ class Plantower(object):
             immediate reading sensor data gives you 0 values.
         """
 
-        pms_cmd_changemode_passive = b'\x42\x4d\xe1\x00\x00\x01\x70'
-        pms_cmd_changemode_active = b'\x42\x4d\xe1\x00\x01\x01\x71'
-
         if mode == PMS_PASSIVE_MODE:
-            self.serial.write(pms_cmd_changemode_passive)
+            self.serial.write(PMS_CMD_CHANGE_MODE_PASSIVE)
+            self.serial.flush()  # Make sure tx buffer is completely sent
+            self.logger.info("Sensor set in passive mode")
         else:
-            self.serial.write(pms_cmd_changemode_active)
+            self.serial.write(PMS_CMD_CHANGE_MODE_ACTIVE)
+            self.serial.flush()  # Make sure tx buffer is completely sent
+            self.logger.info("Sensor set in active mode")
 
-        self.serial.flush()
-        time.sleep(0.2)
-        return
+        time.sleep(0.2)  # Wait sensor busy finished
 
     def read_in_passive(self, perform_flush=True):
+        """
+            In passive mode, the sensor fan is running but measured data is not automatically serviced.
+            The sensor returns data in response to command, and data structure is same as the active mode.
+        """
+
         if perform_flush:
-            self.serial.reset_input_buffer()  #Flush any data in the buffer
-        pms_cmd_read_in_passive = b'\x42\x4d\xe2\x00\x00\x01\x71'
-        self.serial.write(pms_cmd_read_in_passive)
-        self.serial.flush()
+            self.serial.reset_input_buffer()  # Flush any data in the buffer
+
+        self.serial.write(PMS_CMD_READ_IN_PASSIVE)
+        self.serial.flush()  # Make sure tx buffer is completely sent
         ret = self.read(False)
-        time.sleep(0.5)  # wait sensor busy finished
+        time.sleep(0.5)  # Wait sensor busy finished
         return ret
 
     def set_to_sleep(self, to_sleep=True):
@@ -175,21 +184,17 @@ class Plantower(object):
             From datasheet "Stable data should be got at least 30 seconds after the sensor wakeup
             from the sleep mode because of the fan's performance."
         """
-        pms_cmd_to_sleep = b'\x42\x4d\xe4\x00\x00\x01\x73'
-        pms_cmd_to_wakeup = b'\x42\x4d\xe4\x00\x01\x01\x74'
 
         if to_sleep:
-            self.serial.write(pms_cmd_to_sleep)
+            self.serial.write(PMS_CMD_TO_SLEEP)
         else:
-            self.serial.write(pms_cmd_to_wakeup)
+            self.serial.write(PMS_CMD_TO_WAKEUP)
 
-        self.serial.flush()
-        time.sleep(2)  # number not specified in datasheet but sensor does not receive command for 2s.
-        return
+        self.serial.flush()  # Make sure tx buffer is completely sent
+        time.sleep(2)  # Number not specified in datasheet but sensor does not receive command for 2s.
 
     def set_to_wakeup(self):
         self.set_to_sleep(False)
-        return
 
 
 """
