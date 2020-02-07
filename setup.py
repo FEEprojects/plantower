@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="plantower",
-    version="0.0.10",
+    version="0.0.11",
     author="Philip Basford",
     author_email="P.J.Basford@soton.ac.uk",
     description="An interface for plantower particulate matter sensors",
