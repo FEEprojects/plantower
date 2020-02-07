@@ -26,4 +26,3 @@ PLANTOWER.set_to_wakeup() #ensure fan is spinning
 time.sleep(30) # give it a chance to stabilise
 #actually do the reading
 print(PLANTOWER.read())
-
