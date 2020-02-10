@@ -1,29 +1,28 @@
-#  test code for sleep wakeup with passive mode
-pt = plantower.Plantower(port='COM3')
+#!/usr/bin/env python3
+"""
+    Basic test script to demonstrate active mode of the plantower
+"""
 
-pt.set_to_sleep()
-time.sleep(5)
-
-pt.set_to_wakeup()
-pt.mode_change(0)
-time.sleep(10)
-
-result = pt.read_in_passive()
-pt.set_to_sleep()
-print(result)
-exit(0)
+from argparse import ArgumentParser
+import time
+import plantower
 
 
-#  test code for passive mode
-pt = plantower.Plantower(port='COM3')
-pt.mode_change(0)
-time.sleep(5)
-result = pt.read_in_passive()
-print(result)
-exit(0)
-
+PARSER = ArgumentParser(
+        description="Test plantower code in active mode")
+PARSER.add_argument(
+    "port",
+    action="store",
+    help="The serial port to use")
+ARGS = PARSER.parse_args()
 
 #  test code for active mode
-pt = plantower.Plantower(port='COM3')
-print(pt.read())
-
+PLANTOWER = plantower.Plantower(port=ARGS.port)
+print("Making sure it's correctly setup for active mode. Please wait")
+#make sure it's in the correct mode if it's been used for passive beforehand
+#Not needed if freshly plugged in
+PLANTOWER.mode_change(plantower.PMS_ACTIVE_MODE) #change back into active mode
+PLANTOWER.set_to_wakeup() #ensure fan is spinning
+time.sleep(30) # give it a chance to stabilise
+#actually do the reading
+print(PLANTOWER.read())
